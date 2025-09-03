@@ -2,28 +2,55 @@ import librosa
 import numpy as np
 import statistics
 import pygame
+import math
 
 pygame.init()
 pygame.mixer.init()
 
-def draw_sine_wave(amplitude):
+screen_width = 500
+screen_height = 500
+
+def draw_sine_wave(amplitudes, sections):
 # function from https://www.youtube.com/watch?v=675teI6-_-g&ab_channel=AndingAnalytics
+
+
+# for i in range sections
+# get the amplitude list of that section
+# screen width/sections = the division of each section
+# determine the screen interval x in range (i*division:(i+1)*division)
+# for that range calculate the y with the amplitude in the according section
     screen.fill((0, 0, 0))
     points = []
-    if amplitude > 10:
-        for x in range(screen_width):
-            y = screen_height/2 + int(amplitude * math.sin(x * 0.02)) # sin function
-            points.append((x, y))
+    chunk = screen_width/sections
+    for i in range(sections):
+        current = amplitudes[i]
+        if i < (sections - 1):
+            for x in range(int(i*chunk), int((i+1)*chunk)):
+                y = screen_height/2 + int(current*5 * math.sin(x * 0.02)) # sin function
+                print(y)
+                points.append((x, y))
+        else:
+            for x in range(int(i*chunk), int(screen_width)):
+                y = screen_height/2 + int(current*5 * math.sin(x * 0.02)) # sin function
+                points.append((x, y))
+
+    # if amplitude > 10:
+    #     for x in range(screen_width):
+    #         y = screen_height/2 + int(amplitude * math.sin(x * 0.02)) # sin function
+    #         points.append((x, y))
     
-    else:
-        points.append((0, screen_height/2)) 
-        points.append((screen_width, screen_height/2)) 
-        # two edge points halfway up the screen
+    # else:
+    #     points.append((0, screen_height/2)) 
+    #     points.append((screen_width, screen_height/2)) 
+    #     # two edge points halfway up the screen
 
     pygame.draw.lines(screen, (255, 255, 255), False, points, 2) 
     pygame.display.flip()
 
-filename = 'battle.wav'
+filename = 'red_instrumental.wav'
+
+screen = pygame.display.set_mode((screen_width, screen_height))
+clock = pygame.time.Clock()
 
 y, sr = librosa.load(filename)
 pygame.mixer.music.load(filename)
@@ -86,26 +113,33 @@ for i in range(frames):
     sec5 = D[821:1026, i]
     section_5.append(statistics.mean(sec5)+31.77744)
 
-# current_time = 1
+all_amplitudes = [section_1, section_2, section_3, section_4, section_5]
+print(all_amplitudes)
 
-# running = True
-# amplitude = 100
-# pygame.mixer.music.play(0)
+running = True
+amplitude = 100
+pygame.mixer.music.play(0)
 
-# while running:
-#     position = 0
-#     while position >= 0: # while the song is playing
+while running:
+    position = 0
+    while position >= 0: # while the song is playing
 
-#         position = pygame.mixer.music.get_pos() / 1000
-#         frame = (f.index(min(f, key=lambda x:abs(x-position))))
+        position = pygame.mixer.music.get_pos() / 1000
+        frame = (f.index(min(f, key=lambda x:abs(x-position))))
 
-#         print(section_2[frame])
+        # for section in all_amplitudes:
+        #     print(section[frame])
+            # make a function that takes the entire all_amplitudes and the given frame to produce an image
 
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 running = False
-#                 pygame.mixer.music.stop()
+        current_amps = [section[frame] for section in all_amplitudes] # this should do what i want to work w the function
+        print(current_amps)
+        draw_sine_wave(current_amps, 5)
+        clock.tick(60)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.mixer.music.stop()
     
-#     running = False 
+    running = False 
 
-# pygame.quit()
+pygame.quit()
