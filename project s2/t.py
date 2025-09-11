@@ -28,7 +28,7 @@ def draw_sine_wave(amplitudes, sections):
     pygame.draw.lines(screen, (255, 255, 255), False, points, 2) 
     pygame.display.flip()
 
-filename = 'sunny.wav'
+filename = 'sunny_clip.wav'
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
@@ -75,7 +75,7 @@ running = True
 pygame.mixer.music.play(0)
 
 while running:
-    position = 0
+    position = 0 
     while position >= 0: # while the song is playing
 
         position = pygame.mixer.music.get_pos() / 1000
