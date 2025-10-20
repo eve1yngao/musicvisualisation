@@ -3,15 +3,10 @@ import numpy as np
 import statistics
 import pygame
 import math
-
-pygame.init()
-pygame.mixer.init()
-
-screen_width = 500
-screen_height = 500
+import tkinter as tk
+from tkinter import filedialog
 
 def draw_sine_wave(amplitudes, sections):
-# sin part of function from https://www.youtube.com/watch?v=675teI6-_-g&ab_channel=AndingAnalytics
 
     period = screen_width/sections
     b = (math.pi * 2)/period
@@ -28,7 +23,25 @@ def draw_sine_wave(amplitudes, sections):
     pygame.draw.lines(screen, (255, 255, 255), False, points, 2) 
     pygame.display.flip()
 
-filename = 'sunny_clip.wav'
+def import_file():
+    root=tk.Tk()
+    root.withdraw()
+
+    filePath=filedialog.askopenfilename(title = 'Select Song', filetypes = [("Wav Files", "*.wav")])
+
+    print('File selected',filePath)
+    return filePath
+
+filename = import_file()
+
+if not filename:
+    quit()
+
+pygame.init()
+pygame.mixer.init()
+
+screen_width = 500
+screen_height = 500
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
@@ -40,7 +53,6 @@ stft = np.abs(librosa.stft(y))
 D = librosa.amplitude_to_db(stft)
 
 frequencies = librosa.fft_frequencies()
-print(len(frequencies)) # this stuff is just for reference that there are 1025 frequencies
 
 frames = len(D[0]) # number of frames
 
@@ -52,6 +64,8 @@ section_2 = []
 section_3 = []
 section_4 = []
 section_5 = []
+
+sections = 5
 
 for i in range(frames): # make an actual function to do this
     sec1 = D[:206, i]
